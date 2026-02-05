@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Palet Warna Yotsuba B */
+  --color-background: #eef2ff;
+  --color-post-bg: #d6daf0;
+  --color-border: #b7c5d9;
+  --color-text: #000000;
+  --color-title: #0f0c5d;
+  --color-name: #117743;
+  --color-link: #34345c;
+  --color-link-hover: #d00;
+  --color-greentext: #789922;
+  --color-reply-border: #d6daf0;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: arial, helvetica, sans-serif;
+  font-size: 10pt;
+  margin: 0;
+  padding: 8px;
+}
+
+/* Typography Khusus */
+a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--color-link-hover);
+}
+
+.post-title {
+  color: var(--color-title);
+  font-weight: 700;
+  font-size: 11pt;
+}
+
+.poster-name {
+  color: var(--color-name);
+  font-weight: 700;
+}
+
+/* Komponen Postingan (Box Style) */
+.reply-box {
+  background-color: var(--color-post-bg);
+  border: 1px solid var(--color-border);
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+  display: inline-block;
+  padding: 4px 8px;
+  margin-top: 4px;
+  border-radius: 2px;
+}
+
+/* Greentext Implementation */
+.greentext {
+  color: var(--color-greentext);
+  font-family: 'Courier New', courier, monospace; /* Opsional */
+}
+
+/* Header Board */
+.board-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.board-title {
+  color: #af0a0f;
+  font-size: 24pt;
+  font-family: Tahoma, sans-serif;
+  font-weight: bold;
+  letter-spacing: -2px;
+}
