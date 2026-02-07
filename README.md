@@ -1,79 +1,161 @@
-# /exercise/ - Mini Twitter (Imageboard)
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue?style=for-the-badge&logo=typescript&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white)
+# /exercise/ - Mini Twitter (Retro Imageboard)
 
-Ini adalah aplikasi papan gambar (*imageboard*) bergaya retro yang dibangun dengan **Next.js 15**, **TypeScript**, dan **Supabase**. Aplikasi ini didesain dengan tema warna Yotsuba B klasik, mendukung fitur *real-time*, sistem *reply* bersarang, dan format teks *greentext*.
+![Next JS](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.0+-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Auth_%26_DB-green?style=for-the-badge&logo=supabase&logoColor=white)
 
-<img width="1365" height="644" alt="Main Interface" src="https://github.com/user-attachments/assets/d404dff2-aaec-4805-97cc-ba2c8dbec1cd" />
+This project is a retro-style imageboard application built with **Next.js 15** and **Supabase**. Styled after classic imageboards with a Yotsuba B color theme, it features real-time data fetching, nested replies, file attachments, and a full authentication system.
 
-## Ringkasan Teknologi
+<img width="1365" height="644" alt="Home Screen" src="https://github.com/user-attachments/assets/d404dff2-aaec-4805-97cc-ba2c8dbec1cd" />
 
-Aplikasi ini menggunakan arsitektur *full-stack* modern dengan Next.js App Router dan Supabase sebagai Backend-as-a-Service (BaaS).
+## System Overview
 
-| Komponen | Teknologi | Keterangan |
-| :--- | :--- | :--- |
-| **Framework** | Next.js 15 | Menggunakan App Router & Server Components. |
-| **Bahasa** | TypeScript | Type safety untuk seluruh komponen. |
-| **Database** | Supabase (PostgreSQL) | Menyimpan data user, thread, dan like. |
-| **Auth** | Supabase Auth | Autentikasi email/password. |
-| **Storage** | Supabase Storage | Penyimpanan gambar thread dan avatar user. |
-| **Styling** | Tailwind CSS | Utility-first CSS dengan palet warna kustom. |
-| **State** | React Hooks | `useActionState`, `useState` untuk interaksi klien. |
+The application utilizes the Next.js App Router with Server Components for optimal performance and SEO, coupled with Supabase for backend services.
+
+| Component | Technology / Description |
+| :--- | :--- |
+| **Framework** | Next.js 15 (App Router, Server Components). |
+| **Language** | TypeScript for static typing and safety. |
+| **Styling** | Tailwind CSS + Custom CSS for retro aesthetics. |
+| **Database** | PostgreSQL (managed by Supabase). |
+| **Authentication** | Supabase Auth (Email/Password). |
+| **Storage** | Supabase Storage for image attachments. |
+| **State** | React Hooks (`useActionState`, `useState`). |
+| **Real-time** | `revalidate = 0` configuration for fresh data. |
 
 ---
 
-## Struktur Proyek
+## Implementation Details
 
-Struktur folder diorganisir untuk memisahkan logika server, komponen UI, dan utilitas.
+### 1. Project Structure
+
+The project follows a modular structure, separating server actions, UI components, and utility logic.
 
 ```bash
 mini-twitter/
 ├── app/
-│   ├── actions.ts                 # Server actions (auth, posts, profiles, likes)
-│   ├── globals.css                # Global Tailwind & custom styles
+│   ├── actions.ts                 # Server actions (Mutations)
+│   ├── globals.css                # Global styles
 │   ├── layout.tsx                 # Root layout
-│   ├── page.tsx                   # Home/board view
-│   ├── login/page.tsx             # Login & signup page
-│   ├── profile/page.tsx           # User profile page
-│   └── thread/[id]/page.tsx       # Single thread view
-├── components/
-│   ├── PostForm.tsx               # Form for creating posts/replies (Client)
-│   ├── ProfileForm.tsx            # Profile editing form (Client)
-│   └── ThreadView.tsx             # Thread display component (Server)
-├── utils/
-│   ├── supabase.js                # Supabase client factory
-│   └── formatText.tsx             # Text formatting utilities
-└── public/                        # Static assets
+│   ├── page.tsx                   # Main board view
+│   ├── login/                     # Auth pages
+│   └── thread/[id]/               # Dynamic thread routes
+├── components/                    # Reusable UI (Forms, Views)
+├── utils/                         # Supabase client & formatting
+└── types.ts                       # TypeScript interfaces
+
+```
+
+### 2. Database Schema
+
+The backend relies on three primary tables linked via foreign keys to handle users, discussions, and interactions.
+
+```sql
+-- Posts Table (Threads & Replies)
+CREATE TABLE posts (
+  id BIGSERIAL PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  name TEXT DEFAULT 'Anonymous',
+  content TEXT NOT NULL,
+  parent_id BIGINT REFERENCES posts(id), -- Null for threads, set for replies
+  image_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Profiles Table
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  display_name TEXT,
+  avatar_url TEXT
+);
+
+-- Likes Table (Many-to-Many)
+CREATE TABLE likes (
+  user_id UUID REFERENCES auth.users(id),
+  post_id BIGINT REFERENCES posts(id),
+  UNIQUE(user_id, post_id)
+);
+
+```
+
+### 3. Server Actions
+
+Data mutations are handled exclusively through Next.js Server Actions to ensure security and progressive enhancement.
+
+```typescript
+// app/actions.ts example
+export async function createPost(formData: FormData) {
+  'use server'
+  const supabase = createClient()
+  // ... validation and database insertion logic
+  revalidatePath('/')
+}
 
 ```
 
 ---
 
-## Instalasi dan Konfigurasi
+## Visual Tour & Features
 
-### 1. Prasyarat
+The interface is designed to evoke nostalgia while providing modern functionality.
 
-Pastikan Anda telah menginstal:
+### 1. Authentication & Profile Management
 
-* Node.js 18+ dan npm/yarn
-* Akun Supabase aktif
-* Git
+Users can sign up via email and customize their online persona. Profiles include display names, bios, and avatars.
 
-### 2. Kloning Repository
+<img width="487" height="297" alt="Login Screen" src="https://github.com/user-attachments/assets/843d6441-2db7-4be6-96c6-99a83c068449" />
+<img width="1365" height="648" alt="Profile Editing" src="https://github.com/user-attachments/assets/7b1074bc-31ec-4fcb-a737-29149e423f36" />
+
+### 2. Thread Creation & Media
+
+Users can start threads with subject lines and attach images. The system handles file uploads directly to Supabase Storage.
+
+<img width="1365" height="634" alt="Thread Creation" src="https://github.com/user-attachments/assets/496f4119-90d6-4af3-9fec-8a0c7c25d9c0" />
+
+### 3. Interaction (Replies, Likes, Deletion)
+
+The platform supports nested replies, a persistent like system, and self-moderation (deletion of own posts).
+
+| Feature | Preview |
+| --- | --- |
+| **Replying** | <img width="441" height="146" alt="Reply Interface" src="https://github.com/user-attachments/assets/6ce1b8b0-b5d6-41af-b7af-a7f865690785" /> |
+| **Liking** | <img width="430" height="144" alt="Like Button" src="https://github.com/user-attachments/assets/38c206f0-af29-4725-90da-9b3121b630b8" /> |
+| **Deleting** | <img width="439" height="93" alt="Delete Button" src="https://github.com/user-attachments/assets/17af5ea7-f2fa-4710-b302-589c3af69da4" /> |
+
+### 4. Retro Styling Palette
+
+The "Yotsuba B" theme is achieved using specific hex codes in Tailwind.
+
+| Color | Hex | Usage |
+| --- | --- | --- |
+| **Background** | `#eef2ff` | Main page background |
+| **Post Box** | `#d6daf0` | Individual post containers |
+| **Border** | `#b7c5d9` | Dividers and outlines |
+| **Greentext** | `#789922` | Quoted text (`>text`) |
+
+---
+
+## Getting Started
+
+Follow these steps to set up the project locally.
+
+### 1. Installation
 
 ```bash
+# 1. Clone the repository
 git clone <repo-url>
 cd mini-twitter
+
+# 2. Install dependencies
 npm install
 
 ```
 
-### 3. Konfigurasi Environment
+### 2. Environment Setup
 
-Buat file `.env.local` di root proyek dan masukkan kredensial Supabase Anda:
+Create a `.env.local` file in the root directory. Get these credentials from your Supabase project settings.
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=[https://your-project.supabase.co](https://your-project.supabase.co)
@@ -81,137 +163,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 
 ```
 
-### 4. Setup Database (Supabase SQL)
-
-Jalankan perintah SQL berikut di dashboard Supabase untuk membuat tabel yang diperlukan:
-
-```sql
--- Tabel Posts
-CREATE TABLE posts (
-  id BIGSERIAL PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  name TEXT NOT NULL DEFAULT 'Anonymous',
-  subject TEXT,
-  content TEXT NOT NULL,
-  parent_id BIGINT REFERENCES posts(id) ON DELETE CASCADE,
-  image_url TEXT,
-  image_filename TEXT,
-  image_size BIGINT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabel Profiles
-CREATE TABLE profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  bio TEXT,
-  avatar_url TEXT,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Tabel Likes
-CREATE TABLE likes (
-  id BIGSERIAL PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  post_id BIGINT REFERENCES posts(id) ON DELETE CASCADE NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(user_id, post_id)
-);
-
-```
-
-**Konfigurasi Storage Buckets:**
-
-1. Buat bucket publik bernama `post-images` (untuk lampiran thread).
-2. Buat bucket publik bernama `avatars` (untuk foto profil).
-
-### 5. Jalankan Server
+### 3. Running the App
 
 ```bash
+# Run the development server
 npm run dev
 
 ```
 
-Buka [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) di browser Anda.
-
----
-
-## Panduan Penggunaan
-
-### 1. Membuat Akun & Login
-
-Masuk ke halaman `/login` untuk mendaftar akun baru atau masuk. Sistem menggunakan Supabase Auth untuk keamanan sesi.
-
-<img width="487" height="297" alt="Login Screen" src="https://github.com/user-attachments/assets/843d6441-2db7-4be6-96c6-99a83c068449" />
-
-### 2. Manajemen Profil
-
-Klik username Anda di pojok kanan atas untuk mengedit nama tampilan, bio, dan mengunggah avatar.
-
-<img width="1365" height="648" alt="Profile Editing" src="https://github.com/user-attachments/assets/7b1074bc-31ec-4fcb-a737-29149e423f36" />
-
-### 3. Membuat Thread Baru
-
-Di halaman utama (`/`), isi formulir posting. Anda dapat menyertakan subjek opsional dan melampirkan file gambar.
-
-<img width="1365" height="634" alt="Creating Thread" src="https://github.com/user-attachments/assets/496f4119-90d6-4af3-9fec-8a0c7c25d9c0" />
-
-### 4. Membalas & Interaksi
-
-Masuk ke dalam thread untuk membalas. Anda juga dapat memberikan "Like" pada postingan atau menghapus postingan milik Anda sendiri.
-
-<img width="1365" height="361" alt="Reply View" src="https://github.com/user-attachments/assets/b7cd2015-7a98-4da9-b960-b12ce24f6c09" />
-
-#### Fitur Formatting
-
-Postingan mendukung format teks khusus ala imageboard:
-
-| Format | Contoh Input | Hasil |
-| --- | --- | --- |
-| **Greentext** | `>Ini adalah quote` | Teks berwarna hijau (*quoting*). |
-| **Reply Link** | `>>123` | Hyperlink biru ke nomor post. |
-| **Line breaks** | Tekan Enter | Render baris baru (`<br />`). |
-
----
-
-## Server Actions
-
-Seluruh mutasi data ditangani melalui **Next.js Server Actions** di `app/actions.ts` untuk keamanan dan performa:
-
-* `login()` / `signup()` / `signout()`: Manajemen sesi autentikasi.
-* `updateProfile()`: Mengubah data profil user.
-* `createPost()`: Membuat thread atau reply (termasuk upload file).
-* `deletePost()`: Menghapus postingan (hanya pemilik).
-* `toggleLike()`: Menambah/menghapus like.
-
----
-
-## Styling & Tema
-
-Aplikasi menggunakan tema **retro imageboard** yang terinspirasi dari Yotsuba B:
-
-| Elemen | Warna Hex | Penggunaan |
-| --- | --- | --- |
-| **Background** | `#eef2ff` | Latar belakang halaman utama. |
-| **Post Box** | `#d6daf0` | Kontainer postingan. |
-| **Border** | `#b7c5d9` | Garis tepi elemen. |
-| **Judul** | `#0f0c5d` | Judul bagian dan subjek. |
-| **Nama** | `#117743` | Nama pengirim (Poster). |
-| **Greentext** | `#789922` | Teks kutipan (`>text`). |
-
----
-
-## Troubleshooting
-
-Jika Anda mengalami masalah saat pengembangan:
-
-1. **Cannot find module '@/types':**
-Pastikan `tsconfig.json` memiliki konfigurasi path alias `"paths": { "@/*": ["./*"] }`.
-2. **Supabase Connection Error:**
-Periksa kembali `.env.local`. Pastikan RLS (Row Level Security) di Supabase sudah diatur untuk mengizinkan akses public/auth yang sesuai.
-3. **File Upload Gagal:**
-Pastikan nama bucket di Supabase Storage sesuai (`post-images`, `avatars`) dan policy bucket mengizinkan upload.
+Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) to view the application.
 
 ```
 
