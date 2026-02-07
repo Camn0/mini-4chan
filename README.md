@@ -151,32 +151,43 @@ mini-twitter/
 ## How to Use
 
 ### Creating an Account
+<img width="487" height="297" alt="image" src="https://github.com/user-attachments/assets/843d6441-2db7-4be6-96c6-99a83c068449" />
 1. Go to `/login` page
 2. Fill in the **New User Registration** form
 3. Click "Sign Up"
 4. Log in with your new credentials
 
 ### Editing Your Profile
+<img width="1365" height="648" alt="image" src="https://github.com/user-attachments/assets/7b1074bc-31ec-4fcb-a737-29149e423f36" />
 1. Click your username (top-right corner)
 2. Edit display name, bio, and upload avatar
 3. Click "Update Profile"
 
+
 ### Creating a Thread
+<img width="1365" height="644" alt="スクリーンショット 2026-02-07 084059" src="https://github.com/user-attachments/assets/d404dff2-aaec-4805-97cc-ba2c8dbec1cd" />
+<img width="1365" height="634" alt="image" src="https://github.com/user-attachments/assets/496f4119-90d6-4af3-9fec-8a0c7c25d9c0" />
 1. On the home page (`/`), fill the **posting form**
 2. Enter optional subject and comment
 3. Optionally attach an image file
 4. Click "Post"
 
 ### Replying to a Thread
+<img width="1365" height="361" alt="スクリーンショット 2026-02-07 084138" src="https://github.com/user-attachments/assets/b7cd2015-7a98-4da9-b960-b12ce24f6c09" />
+<img width="441" height="146" alt="スクリーンショット 2026-02-07 084151" src="https://github.com/user-attachments/assets/6ce1b8b0-b5d6-41af-b7af-a7f865690785" />
 1. Click `[Reply]` on any thread
 2. Fill the reply form on the thread page
 3. Click "Reply"
 
 ### Liking Posts
+<img width="498" height="155" alt="スクリーンショット 2026-02-07 084200" src="https://github.com/user-attachments/assets/d70a6287-1238-4e03-a18b-40ed24a3f213" />
+<img width="430" height="144" alt="スクリーンショット 2026-02-07 084217" src="https://github.com/user-attachments/assets/38c206f0-af29-4725-90da-9b3121b630b8" />
 1. Click the `♥ Like` button on any post
 2. Like counts appear next to the heart icon
 
 ### Deleting Posts
+<img width="460" height="138" alt="スクリーンショット 2026-02-07 084233" src="https://github.com/user-attachments/assets/c435029e-bdf4-4ada-9a99-19881947103e" />
+<img width="439" height="93" alt="スクリーンショット 2026-02-07 084241" src="https://github.com/user-attachments/assets/17af5ea7-f2fa-4710-b302-589c3af69da4" />
 1. Click the `[x]` button on your own post
 2. Confirm deletion
 
