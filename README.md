@@ -144,7 +144,7 @@ Follow these steps to set up the project locally.
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/Camn0/mini-4chan/](https://github.com/Camn0/mini-4chan/)
+git clone https://github.com/Camn0/mini-4chan/
 cd mini-4chan
 
 # 2. Install dependencies
@@ -157,7 +157,7 @@ npm install
 Create a `.env.local` file in the root directory. Get these credentials from your Supabase project settings.
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=[https://your-project.supabase.co](https://your-project.supabase.co)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 
 ```
