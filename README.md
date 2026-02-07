@@ -145,8 +145,8 @@ Follow these steps to set up the project locally.
 
 ```bash
 # 1. Clone the repository
-git clone <repo-url>
-cd mini-twitter
+git clone https://github.com/Camn0/mini-4chan/
+cd mini-4chan
 
 # 2. Install dependencies
 npm install
