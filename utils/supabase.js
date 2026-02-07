@@ -1,13 +1,27 @@
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
-// Mengambil variabel lingkungan
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+export async function createClient() {
+  const cookieStore = await cookies();
 
-// Validasi keberadaan variabel lingkungan
-if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Supabase URL dan Key harus didefinisikan di .env.local');
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Error ini bisa diabaikan di Server Component
+          }
+        },
+      },
+    }
+  );
 }
-
-// Inisialisasi client
-export const supabase = createClient(supabaseUrl, supabaseKey);

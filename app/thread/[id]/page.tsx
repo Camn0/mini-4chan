@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase';
+import { createClient } from '@/utils/supabase';
 import PostForm from '@/components/PostForm';
 import ThreadView from '@/components/ThreadView';
 import Link from 'next/link';
@@ -14,7 +14,8 @@ interface PageProps {
 export default async function ThreadPage({ params }: PageProps) {
   // Await params di Next.js 15+
   const { id } = await params;
-
+  const supabase = await createClient();
+  
   // 1. Fetch Thread (OP) beserta semua Replies-nya
   const { data: thread } = await supabase
     .from('posts')
